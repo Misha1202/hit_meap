@@ -3,331 +3,462 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Выгрузка данных по карте</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <title>Мемополис 2025 - Полезно и прикольно</title>
     <style>
+        :root {
+            --neon-pink: #ff00ff;
+            --neon-blue: #00ffff;
+            --dark-bg: #121212;
+            --meme-yellow: #ffff00;
+            --meme-red: #ff0000;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
+            font-family: 'Comic Sans MS', 'Impact', sans-serif;
+            background-color: var(--dark-bg);
+            color: white;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
         }
-        h1 {
-            color: #333;
+        
+        .glitch-text {
+            text-shadow: 3px 3px 0 var(--neon-pink), -3px -3px 0 var(--neon-blue);
+            animation: glitch 2s infinite;
+        }
+        
+        @keyframes glitch {
+            0% { text-shadow: 3px 3px 0 var(--neon-pink), -3px -3px 0 var(--neon-blue); }
+            25% { text-shadow: -3px 3px 0 var(--neon-pink), 3px -3px 0 var(--neon-blue); }
+            50% { text-shadow: 3px -3px 0 var(--neon-pink), -3px 3px 0 var(--neon-blue); }
+            75% { text-shadow: -3px -3px 0 var(--neon-pink), 3px 3px 0 var(--neon-blue); }
+            100% { text-shadow: 3px 3px 0 var(--neon-pink), -3px -3px 0 var(--neon-blue); }
+        }
+        
+        header {
+            background: linear-gradient(90deg, #ff00ff, #00ffff);
+            padding: 20px;
             text-align: center;
+            border-bottom: 5px dashed var(--meme-yellow);
         }
-        .container {
-            background-color: white;
+        
+        .meme-button {
+            background: var(--meme-yellow);
+            color: black;
+            border: none;
+            padding: 15px 25px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 0 var(--meme-red);
+            margin: 10px;
+        }
+        
+        .meme-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 0 var(--meme-red);
+        }
+        
+        .meme-button:active {
+            transform: translateY(2px);
+            box-shadow: 0 3px 0 var(--meme-red);
+        }
+        
+        .feature-box {
+            background: rgba(255, 255, 255, 0.1);
+            border: 3px solid var(--neon-pink);
+            border-radius: 15px;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin: 20px;
+            transition: all 0.3s;
         }
-        .input-group {
-            margin-bottom: 20px;
+        
+        .feature-box:hover {
+            transform: scale(1.02);
+            border-color: var(--neon-blue);
+            background: rgba(255, 255, 255, 0.15);
         }
-        label {
-            display: block;
-            margin-bottom: 5px;
+        
+        .meme-img {
+            max-width: 100%;
+            border: 5px solid white;
+            border-radius: 10px;
+            margin: 10px 0;
+            transition: all 0.3s;
+        }
+        
+        .meme-img:hover {
+            transform: rotate(5deg);
+            filter: hue-rotate(90deg);
+        }
+        
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        
+        .rainbow-text {
+            background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
             font-weight: bold;
         }
-        input[type="text"] {
+        
+        .counter {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--neon-blue);
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        footer {
+            background: linear-gradient(90deg, #00ffff, #ff00ff);
+            padding: 20px;
+            text-align: center;
+            border-top: 5px dashed var(--meme-yellow);
+            margin-top: 30px;
+        }
+        
+        /* Анимация для мемных эмодзи */
+        .meme-emoji {
+            font-size: 30px;
+            display: inline-block;
+            animation: bounce 1s infinite alternate;
+        }
+        
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+        
+        /* Стили для модального окна */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-        #status {
-            margin-top: 20px;
-            padding: 10px;
-            border-radius: 4px;
-        }
-        .progress {
-            margin-top: 10px;
-            height: 20px;
-            background-color: #e0e0e0;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        .progress-bar {
             height: 100%;
-            background-color: #4CAF50;
-            width: 0%;
-            transition: width 0.3s;
+            background-color: rgba(0,0,0,0.8);
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
+        
+        .modal-content {
+            background-color: var(--dark-bg);
+            margin: 10% auto;
+            padding: 20px;
+            border: 5px solid var(--neon-pink);
+            width: 80%;
+            max-width: 600px;
+            border-radius: 15px;
+            position: relative;
         }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
+        
+        .close {
+            color: white;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
         }
-        th {
-            background-color: #f2f2f2;
+        
+        .close:hover {
+            color: var(--neon-pink);
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .meme-button {
+                padding: 10px 15px;
+                font-size: 16px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Выгрузка данных по складам WB</h1>
-        
-        <div class="input-group">
-            <label for="token">Токен авторизации:</label>
-            <input type="text" id="token" placeholder="Введите ваш токен авторизации">
+    <header>
+        <h1 class="glitch-text">МЕМОПОЛИС 2025 <span class="meme-emoji">🚀</span></h1>
+        <p>Где полезное встречается с прикольным!</p>
+        <button class="meme-button" id="surpriseBtn">НАЖМИ МЕНЯ! <span class="meme-emoji">👀</span></button>
+    </header>
+    
+    <div class="counter">
+        <span id="visitorCount">0</span> мемных посетителей сегодня!
+    </div>
+    
+    <div class="grid-container">
+        <div class="feature-box">
+            <h2 class="rainbow-text">Генератор мемов <span class="meme-emoji">🎨</span></h2>
+            <p>Создай свой уникальный мем за секунды!</p>
+            <img src="https://via.placeholder.com/300x200?text=Твой+мем+здесь" alt="Пример мема" class="meme-img">
+            <button class="meme-button" id="generateMemeBtn">Сгенерировать мем</button>
         </div>
         
-        <button id="fetchData">Получить данные</button>
-        <button id="exportExcel" disabled>Экспорт в Excel</button>
-        
-        <div class="progress" id="progressContainer" style="display: none;">
-            <div class="progress-bar" id="progressBar"></div>
+        <div class="feature-box">
+            <h2 class="rainbow-text">Крипто-предсказатель <span class="meme-emoji">💰</span></h2>
+            <p>Узнай, когда Dogecoin наконец-то достигнет $1000!</p>
+            <div id="cryptoPrediction">
+                <p>Загружаем данные с блокчейна...</p>
+            </div>
+            <button class="meme-button" id="predictCryptoBtn">Предсказать будущее</button>
         </div>
         
-        <div id="status"></div>
+        <div class="feature-box">
+            <h2 class="rainbow-text">AI-советчик <span class="meme-emoji">🤖</span></h2>
+            <p>Получи мудрый совет от нашего ИИ (он реально умный, честно)!</p>
+            <textarea id="aiQuestion" placeholder="Задай свой вопрос..." rows="3" style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 10px;"></textarea>
+            <button class="meme-button" id="askAIBtn">Спросить ИИ</button>
+            <div id="aiAnswer" style="margin-top: 10px;"></div>
+        </div>
         
-        <div id="tableContainer" style="margin-top: 20px; display: none;">
-            <h2>Результаты:</h2>
-            <table id="resultsTable">
-                <thead>
-                    <tr>
-                        <th>ID склада</th>
-                        <th>Код места</th>
-                        <th>Название места</th>
-                        <th>Кол-во ШК</th>
-                        <th>Объем (л)</th>
-                        <th>Паллета</th>
-                        <th>ID сотрудника</th>
-                        <th>Имя сотрудника</th>
-                        <th>Дата операции</th>
-                        <th>Дата последнего ШК</th>
-                    </tr>
-                </thead>
-                <tbody id="resultsBody"></tbody>
+        <div class="feature-box">
+            <h2 class="rainbow-text">Мемный календарь <span class="meme-emoji">📅</span></h2>
+            <p>Важные даты 2025 года, которые нельзя пропустить!</p>
+            <ul id="memeCalendar" style="text-align: left;">
+                <li>20 апреля - День рождения Илона Маска (готовьте мемы!)</li>
+                <li>1 октября - Всемирный день мемов</li>
+                <li>31 декабря - Апокалипсис (возможно)</li>
+            </ul>
+            <button class="meme-button" id="addEventBtn">Добавить событие</button>
+        </div>
+        
+        <div class="feature-box">
+            <h2 class="rainbow-text">Рандомайзер <span class="meme-emoji">🎲</span></h2>
+            <p>Не можешь решить? Доверься случайности!</p>
+            <div id="randomResult" style="font-size: 24px; font-weight: bold; margin: 15px 0;">?</div>
+            <button class="meme-button" id="randomDecisionBtn">Принять решение за меня</button>
+        </div>
+        
+        <div class="feature-box">
+            <h2 class="rainbow-text">Мемный курс валют <span class="meme-emoji">💸</span></h2>
+            <p>Актуальные курсы в мемной валюте</p>
+            <table style="width: 100%; margin: 15px 0; border-collapse: collapse;">
+                <tr>
+                    <th>Валюта</th>
+                    <th>Курс</th>
+                </tr>
+                <tr>
+                    <td>1 Dogecoin</td>
+                    <td>∞ лайков</td>
+                </tr>
+                <tr>
+                    <td>1 Мемкоин</td>
+                    <td>1000 смешков</td>
+                </tr>
+                <tr>
+                    <td>1 Шутка</td>
+                    <td>0.5 банана</td>
+                </tr>
             </table>
+            <button class="meme-button" id="refreshRatesBtn">Обновить курсы</button>
         </div>
     </div>
-
+    
+    <!-- Модальное окно с сюрпризом -->
+    <div id="surpriseModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 class="rainbow-text">ТЫ НАШЕЛ ПАСХАЛКУ! <span class="meme-emoji">🎉</span></h2>
+            <p>Поздравляем! Ты настоящий мемный детектив!</p>
+            <p>Вот твой приз: бесплатный NFT-мем (не настоящий).</p>
+            <img src="https://via.placeholder.com/400x300?text=Твой+уникальный+NFT" alt="NFT приз" style="max-width: 100%; border: 5px dashed var(--neon-blue); margin: 15px 0;">
+            <button class="meme-button" id="claimPrizeBtn">Забрать приз</button>
+        </div>
+    </div>
+    
+    <footer>
+        <p>© 2025 Мемополис - Все права защищены (или нет) <span class="meme-emoji">😎</span></p>
+        <p>Сайт создан с ❤️, 🚀 и слишком большим количеством кофе</p>
+        <button class="meme-button" id="secretBtn">Не нажимай эту кнопку</button>
+    </footer>
+    
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const tokenInput = document.getElementById('token');
-            const fetchButton = document.getElementById('fetchData');
-            const exportButton = document.getElementById('exportExcel');
-            const statusDiv = document.getElementById('status');
-            const progressContainer = document.getElementById('progressContainer');
-            const progressBar = document.getElementById('progressBar');
-            const resultsBody = document.getElementById('resultsBody');
-            const tableContainer = document.getElementById('tableContainer');
+        // Счетчик посетителей
+        let visitorCount = Math.floor(Math.random() * 10000) + 500;
+        document.getElementById('visitorCount').textContent = visitorCount;
+        
+        setInterval(() => {
+            visitorCount += Math.floor(Math.random() * 3);
+            document.getElementById('visitorCount').textContent = visitorCount;
+        }, 3000);
+        
+        // Генератор мемов
+        document.getElementById('generateMemeBtn').addEventListener('click', function() {
+            const memeTexts = [
+                "Когда забыл выключить камеру",
+                "Я в 6 утра после вечеринки",
+                "Программист vs баги",
+                "Когда твой код работает с первого раза",
+                "Мои финансы:",
+                "Я: не буду тратить деньги\nТакже я:"
+            ];
             
-            let apiData = [];
-            const whIds = [64, 23, 66, 116, 142, 145, 286];
+            const randomText = memeTexts[Math.floor(Math.random() * memeTexts.length)];
+            const memeImg = document.querySelector('.feature-box:nth-child(1) .meme-img');
+            memeImg.src = `https://via.placeholder.com/300x200/000000/FFFFFF?text=${encodeURIComponent(randomText)}`;
             
-            fetchButton.addEventListener('click', async function() {
-                const token = tokenInput.value.trim();
-                
-                if (token.length < 50) {
-                    statusDiv.textContent = "Токен слишком короткий. Пожалуйста, введите корректный токен.";
-                    statusDiv.style.color = "red";
-                    return;
-                }
-                
-                fetchButton.disabled = true;
-                statusDiv.textContent = "Получение данных из API...";
-                statusDiv.style.color = "black";
-                progressContainer.style.display = "block";
-                
-                try {
-                    apiData = await getAllApiData(whIds, token);
-                    
-                    if (apiData.length === 0) {
-                        statusDiv.textContent = "Не удалось получить данные из API. Проверьте токен и соединение.";
-                        statusDiv.style.color = "red";
-                        tableContainer.style.display = "none";
-                    } else {
-                        statusDiv.textContent = `Успешно получено ${apiData.length} записей из API`;
-                        statusDiv.style.color = "green";
-                        displayResults(apiData);
-                        exportButton.disabled = false;
-                        tableContainer.style.display = "block";
-                    }
-                } catch (error) {
-                    statusDiv.textContent = `Ошибка при получении данных: ${error.message}`;
-                    statusDiv.style.color = "red";
-                    tableContainer.style.display = "none";
-                } finally {
-                    fetchButton.disabled = false;
-                }
-            });
+            // Анимация
+            memeImg.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                memeImg.style.transform = 'scale(1)';
+            }, 300);
+        });
+        
+        // Крипто-предсказатель
+        document.getElementById('predictCryptoBtn').addEventListener('click', function() {
+            const predictions = [
+                "Dogecoin достигнет $1000 завтра! (Нет)",
+                "Bitcoin упадет на 90%... или вырастет на 900%",
+                "Новая криптовалюта 'Мемкоин' взлетит до луны!",
+                "Илон Маск снова что-то твитнет про крипту",
+                "Цены пойдут... в каком-то направлении"
+            ];
             
-            exportButton.addEventListener('click', function() {
-                exportToExcel(apiData);
-            });
+            const randomPrediction = predictions[Math.floor(Math.random() * predictions.length)];
+            document.getElementById('cryptoPrediction').innerHTML = `
+                <p style="font-size: 18px; font-weight: bold; color: var(--neon-pink);">${randomPrediction}</p>
+                <p style="font-size: 12px;">Точность предсказания: ${Math.floor(Math.random() * 100)}%</p>
+            `;
+        });
+        
+        // AI-советчик
+        document.getElementById('askAIBtn').addEventListener('click', function() {
+            const question = document.getElementById('aiQuestion').value;
+            const answers = [
+                "Да.",
+                "Нет.",
+                "Возможно.",
+                "Спроси позже.",
+                "Концентрация мемов слишком низка для ответа.",
+                "42.",
+                "Спроси у Илона Маска в твиттере.",
+                "Точно не знаю, но вот мем по теме:",
+                "Это сложный вопрос... может, просто посмотришь смешные видео с котиками?"
+            ];
             
-            async function getApiData(whId, token) {
-                const headers = {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                };
-                
-                const requestBody = {
-                    "office_id": 507,
-                    "wh_id": whId,
-                    "stage": [0, 1, 2, 3, 4, 5, 6, 7, 8],
-                    "place_type": [1, 2]
-                };
-                
-                try {
-                    const response = await fetch(
-                        "https://reports.wbwh.tech/srv/income_flow_reports_layout_api_pa/api/heat_map_mono_get",
-                        {
-                            method: "POST",
-                            headers: headers,
-                            body: JSON.stringify(requestBody)
-                        }
-                    );
-                    
-                    if (response.ok) {
-                        const data = await response.json();
-                        return data.data || [];
-                    } else {
-                        console.error(`Ошибка для wh_id ${whId}: ${response.status} - ${await response.text()}`);
-                        return [];
-                    }
-                } catch (error) {
-                    console.error(`Ошибка соединения для wh_id ${whId}: ${error}`);
-                    return [];
-                }
+            if (!question) {
+                document.getElementById('aiAnswer').innerHTML = '<p style="color: var(--meme-red);">Задай вопрос, я не телепат!</p>';
+                return;
             }
             
-            function parseDataMx(dataMx) {
-                if (!dataMx) return [null, null, null, null];
-                
-                const records = dataMx.split(';');
-                if (!records || records.length === 0) return [null, null, null, null];
-                
-                const lastRecord = records[0];
-                const parts = lastRecord.split(',');
-                
-                if (parts.length >= 4) {
-                    return parts.slice(0, 4);
-                }
-                return [null, null, null, null];
-            }
+            const randomAnswer = answers[Math.floor(Math.random() * answers.length)];
+            document.getElementById('aiAnswer').innerHTML = `
+                <p><strong>Ваш вопрос:</strong> ${question}</p>
+                <p><strong>Ответ ИИ:</strong> ${randomAnswer}</p>
+                ${randomAnswer === "Точно не знаю, но вот мем по теме:" ? 
+                    '<img src="https://via.placeholder.com/200x100?text=Случайный+мем" style="max-width: 100%; margin-top: 10px; border: 3px solid var(--neon-blue);">' : ''}
+            `;
+        });
+        
+        // Рандомайзер решений
+        document.getElementById('randomDecisionBtn').addEventListener('click', function() {
+            const decisions = [
+                "ДА!",
+                "НЕТ!",
+                "МОЖЕТ БЫТЬ",
+                "СПРОСИ У МАМЫ",
+                "ЗАГУГЛИ",
+                "БРОСЬ МОНЕТКУ",
+                "СДЕЛАЙ СКРИН И ВЫЛОЖИ В STORIES",
+                "ПРОСТО ВЫСПИСЬ",
+                "ЭТО НЕ ТАК ВАЖНО"
+            ];
             
-            async function getAllApiData(whIds, token) {
-                const allData = [];
-                const total = whIds.length;
-                let completed = 0;
-                
-                for (const whId of whIds) {
-                    try {
-                        const data = await getApiData(whId, token);
-                        if (data && data.length > 0) {
-                            allData.push(...data);
-                        }
-                        
-                        completed++;
-                        const progress = Math.round((completed / total) * 100);
-                        progressBar.style.width = `${progress}%`;
-                        statusDiv.textContent = `Получение данных... (${completed}/${total} складов)`;
-                        
-                        // Задержка между запросами
-                        await new Promise(resolve => setTimeout(resolve, 500));
-                    } catch (error) {
-                        console.error(`Ошибка при получении данных для wh_id ${whId}: ${error}`);
-                    }
-                }
-                
-                return allData;
-            }
+            const randomElement = document.getElementById('randomResult');
+            randomElement.textContent = "Думаю...";
             
-            function displayResults(data) {
-                resultsBody.innerHTML = '';
-                
-                data.forEach(item => {
-                    const [pallet, empId, empName, dateTime] = parseDataMx(item.data_mx);
-                    
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${item.wh_id || ''}</td>
-                        <td>${item.place_cod || ''}</td>
-                        <td>${item.place_name || ''}</td>
-                        <td>${item.qty_shk || ''}</td>
-                        <td>${item.vol_l || ''}</td>
-                        <td>${pallet || ''}</td>
-                        <td>${empId || ''}</td>
-                        <td>${empName || ''}</td>
-                        <td>${dateTime || ''}</td>
-                        <td>${item.dt_last_shk || ''}</td>
-                    `;
-                    
-                    resultsBody.appendChild(row);
-                });
+            setTimeout(() => {
+                randomElement.textContent = decisions[Math.floor(Math.random() * decisions.length)];
+                randomElement.style.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+            }, 1000);
+        });
+        
+        // Кнопка "Не нажимай эту кнопку"
+        document.getElementById('secretBtn').addEventListener('click', function() {
+            alert("Я же просил не нажимать! Теперь ты должен подписаться на наш мемный канал!");
+            this.textContent = "Ты не послушался :(";
+            this.style.backgroundColor = "var(--meme-red)";
+        });
+        
+        // Сюрприз-модалка
+        const modal = document.getElementById('surpriseModal');
+        const btn = document.getElementById('surpriseBtn');
+        const span = document.getElementsByClassName("close")[0];
+        
+        btn.onclick = function() {
+            modal.style.display = "block";
+            document.body.style.overflow = "hidden";
+        }
+        
+        span.onclick = function() {
+            modal.style.display = "none";
+            document.body.style.overflow = "auto";
+        }
+        
+        document.getElementById('claimPrizeBtn').onclick = function() {
+            alert("Поздравляем! Ты получил ничего! (Как и все NFT)");
+            modal.style.display = "none";
+            document.body.style.overflow = "auto";
+        }
+        
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+                document.body.style.overflow = "auto";
             }
-            
-            function exportToExcel(data) {
-                if (data.length === 0) {
-                    statusDiv.textContent = "Нет данных для экспорта";
-                    statusDiv.style.color = "red";
-                    return;
-                }
+        }
+        
+        // Добавление события в календарь
+        document.getElementById('addEventBtn').addEventListener('click', function() {
+            const newEvent = prompt("Введите новое мемное событие:");
+            if (newEvent) {
+                const calendar = document.getElementById('memeCalendar');
+                const newItem = document.createElement('li');
+                newItem.textContent = newEvent;
+                calendar.appendChild(newItem);
                 
-                try {
-                    // Преобразуем данные в формат для экспорта
-                    const exportData = data.map(item => {
-                        const [pallet, empId, empName, dateTime] = parseDataMx(item.data_mx);
-                        
-                        return {
-                            'ID склада': item.wh_id,
-                            'Код места': item.place_cod,
-                            'Название места': item.place_name,
-                            'Кол-во ШК': item.qty_shk,
-                            'Объем (л)': item.vol_l,
-                            'Паллета': pallet,
-                            'ID сотрудника': empId,
-                            'Имя сотрудника': empName,
-                            'Дата операции': dateTime,
-                            'Дата последнего ШК': item.dt_last_shk
-                        };
-                    });
-                    
-                    // Создаем новую книгу Excel
-                    const wb = XLSX.utils.book_new();
-                    const ws = XLSX.utils.json_to_sheet(exportData);
-                    XLSX.utils.book_append_sheet(wb, ws, "Данные складов");
-                    
-                    // Генерируем файл и скачиваем
-                    const fileName = `warehouses_data_${new Date().toISOString().slice(0, 10)}.xlsx`;
-                    XLSX.writeFile(wb, fileName);
-                    
-                    statusDiv.textContent = `Файл ${fileName} успешно сохранен`;
-                    statusDiv.style.color = "green";
-                } catch (error) {
-                    statusDiv.textContent = `Ошибка при сохранении файла: ${error}`;
-                    statusDiv.style.color = "red";
-                    console.error(error);
-                }
+                // Анимация добавления
+                newItem.style.opacity = '0';
+                newItem.style.transform = 'translateY(-20px)';
+                setTimeout(() => {
+                    newItem.style.transition = 'all 0.5s';
+                    newItem.style.opacity = '1';
+                    newItem.style.transform = 'translateY(0)';
+                }, 10);
             }
         });
+        
+        // Обновление курсов валют
+        document.getElementById('refreshRatesBtn').addEventListener('click', function() {
+            this.textContent = "Обновляем...";
+            setTimeout(() => {
+                this.textContent = "Обновить курсы";
+                alert("Курсы обновлены! (Но они все равно фейковые)");
+            }, 1000);
+        });
+        
+        // Случайная анимация для эмодзи
+        setInterval(() => {
+            const emojis = document.querySelectorAll('.meme-emoji');
+            emojis.forEach(emoji => {
+                if (Math.random() > 0.7) {
+                    emoji.style.animation = 'none';
+                    setTimeout(() => {
+                        emoji.style.animation = 'bounce 1s infinite alternate';
+                    }, 10);
+                }
+            });
+        }, 3000);
     </script>
 </body>
 </html>
