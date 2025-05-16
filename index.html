@@ -1,453 +1,66 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Аниме Мемы | Топовые кринж-моменты</title>
-    <style>
-        :root {
-            --main-color: #d23369;
-            --secondary-color: #ff9a9e;
-            --bg-color: #ffebf3;
-        }
-        
-        body {
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--main-color);
-            margin: 0;
-            padding: 0;
-            transition: background-color 0.5s;
-        }
-        
-        /* Тёмная тема */
-        body.dark-mode {
-            --main-color: #ff7aa8;
-            --secondary-color: #d23369;
-            --bg-color: #1a1a2e;
-            color: #fff;
-        }
-        
-        header {
-            background: linear-gradient(90deg, var(--secondary-color), #fad0c4);
-            padding: 20px;
-            text-align: center;
-            border-bottom: 5px solid var(--main-color);
-            position: relative;
-        }
-        
-        h1 {
-            font-size: 3em;
-            text-shadow: 3px 3px 0 #fff;
-            margin: 0;
-        }
-        
-        .dark-mode h1 {
-            text-shadow: 3px 3px 0 #000;
-        }
-        
-        .subtitle {
-            font-style: italic;
-            color: #fff;
-        }
-        
-        .meme-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            padding: 20px;
-            gap: 20px;
-        }
-        
-        .meme-card {
-            background: white;
-            border-radius: 15px;
-            width: 300px;
-            padding: 15px;
-            box-shadow: 5px 5px 0 var(--main-color);
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .dark-mode .meme-card {
-            background: #16213e;
-            color: #fff;
-        }
-        
-        .meme-card:hover {
-            transform: scale(1.05);
-            box-shadow: 10px 10px 0 var(--main-color);
-        }
-        
-        .meme-img {
-            width: 100%;
-            border-radius: 10px;
-            border: 3px solid var(--secondary-color);
-            transition: transform 0.3s;
-            cursor: pointer;
-        }
-        
-        .meme-img:hover {
-            transform: scale(1.03);
-        }
-        
-        .meme-title {
-            font-weight: bold;
-            font-size: 1.5em;
-            margin: 10px 0;
-            color: var(--main-color);
-        }
-        
-        .meme-desc {
-            font-size: 0.9em;
-        }
-        
-        footer {
-            background: var(--main-color);
-            color: white;
-            text-align: center;
-            padding: 15px;
-        }
-        
-        /* Анимации */
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-        
-        @keyframes rainbow {
-            0% { color: red; }
-            14% { color: orange; }
-            28% { color: yellow; }
-            42% { color: green; }
-            57% { color: blue; }
-            71% { color: indigo; }
-            85% { color: violet; }
-            100% { color: red; }
-        }
-        
-        .spinning {
-            animation: spin 2s linear infinite;
-            display: inline-block;
-        }
-        
-        .floating {
-            animation: float 3s ease-in-out infinite;
-        }
-        
-        .rainbow-text {
-            animation: rainbow 5s linear infinite;
-        }
-        
-        /* Кнопки и элементы управления */
-        .theme-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: white;
-            border: 2px solid var(--main-color);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
-            font-size: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .dark-mode .theme-toggle {
-            background: #16213e;
-            color: white;
-        }
-        
-        .like-btn {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            transition: transform 0.2s;
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-        }
-        
-        .like-btn:hover {
-            transform: scale(1.2);
-        }
-        
-        .liked {
-            color: red;
-        }
-        
-        /* Модальное окно */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 100;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.8);
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .modal-content {
-            max-width: 80%;
-            max-height: 80%;
-            border: 5px solid var(--main-color);
-            border-radius: 10px;
-        }
-        
-        .close-modal {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            color: white;
-            font-size: 40px;
-            cursor: pointer;
-        }
-        
-        /* Конфетти */
-        .confetti {
-            position: fixed;
-            width: 10px;
-            height: 10px;
-            background-color: #f00;
-            opacity: 0;
-            z-index: 9999;
-            animation: confetti-fall 5s linear forwards;
-        }
-        
-        @keyframes confetti-fall {
-            0% {
-                transform: translateY(-100px) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(100vh) rotate(360deg);
-                opacity: 0;
-            }
-        }
-        
-        /* Панель поиска */
-        .search-container {
-            margin: 20px auto;
-            width: 80%;
-            max-width: 500px;
-        }
-        
-        .search-box {
-            width: 100%;
-            padding: 10px;
-            border-radius: 20px;
-            border: 2px solid var(--main-color);
-            font-family: inherit;
-            font-size: 16px;
-        }
-        
-        /* Аудио-плеер */
-        .audio-player {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: white;
-            padding: 10px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.2);
-            z-index: 1000;
-        }
-        
-        .dark-mode .audio-player {
-            background: #16213e;
-            color: white;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File Converter</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="container">
     <header>
-        <h1>Аниме <span class="spinning">🌀</span> <span class="rainbow-text">Мемы</span></h1>
-        <p class="subtitle">Топовые кринж-моменты, которые заставят вас сказать "Нани?!"</p>
-        <div class="theme-toggle" id="themeToggle">🌙</div>
+      <h1>Universal File Converter</h1>
+      <p>Convert files between different formats quickly and easily</p>
     </header>
-    
-    <div class="search-container">
-        <input type="text" class="search-box" id="searchBox" placeholder="Найти мемы...">
-    </div>
-    
-    <div class="meme-container" id="memeContainer">
-        <!-- Мем 1 -->
-        <div class="meme-card">
-            <img src="https://i.imgur.com/JRlY1zR.jpg" alt="Мем 'Это потеряно'" class="meme-img" onclick="openModal(this.src)">
-            <div class="meme-title">Это потеряно...</div>
-            <div class="meme-desc">Когда понимаешь, что забыл сохраниться перед сложной битвой</div>
-            <button class="like-btn" onclick="toggleLike(this)">❤️</button>
-            <span class="like-count">0</span>
+
+    <main>
+      <div class="converter-box">
+        <form id="converterForm">
+          <div class="file-drop-area">
+            <input type="file" id="fileInput" class="file-input" required>
+            <div class="file-drop-text">
+              <span class="material-icons">upload</span>
+              <p>Drag & drop files here or click to browse</p>
+            </div>
+          </div>
+
+          <div class="format-selector">
+            <label for="targetFormat">Convert to:</label>
+            <select id="targetFormat" required>
+              <option value="">Select format...</option>
+              <optgroup label="Images">
+                <option value="jpg">JPG</option>
+                <option value="png">PNG</option>
+                <option value="webp">WebP</option>
+                <option value="gif">GIF</option>
+              </optgroup>
+              <optgroup label="Documents">
+                <option value="pdf">PDF</option>
+                <option value="docx">DOCX</option>
+                <option value="txt">TXT</option>
+              </optgroup>
+              <optgroup label="Audio">
+                <option value="mp3">MP3</option>
+                <option value="wav">WAV</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <button type="submit" class="convert-btn">Convert File</button>
+        </form>
+
+        <div id="status" class="status hidden">
+          <div class="spinner"></div>
+          <p>Converting your file...</p>
         </div>
-        
-        <!-- Мем 2 -->
-        <div class="meme-card">
-            <img src="https://i.imgur.com/3JwWQaT.jpg" alt="Мем 'Атака Титанов'" class="meme-img" onclick="openModal(this.src)">
-            <div class="meme-title">Эрен в 139 главе</div>
-            <div class="meme-desc">Когда 10 лет ждал концовку, а получил "Я тупой"</div>
-            <button class="like-btn" onclick="toggleLike(this)">❤️</button>
-            <span class="like-count">0</span>
-        </div>
-        
-        <!-- Мем 3 -->
-        <div class="meme-card">
-            <img src="https://i.imgur.com/5zSmVtj.jpg" alt="Мем 'Наруто бежит'" class="meme-img" onclick="openModal(this.src)">
-            <div class="meme-title">Наруто бежит</div>
-            <div class="meme-desc">Когда мама говорит "Ужин готов", но ты в середине эпизода</div>
-            <button class="like-btn" onclick="toggleLike(this)">❤️</button>
-            <span class="like-count">0</span>
-        </div>
-        
-        <!-- Мем 4 -->
-        <div class="meme-card">
-            <img src="https://i.imgur.com/XXrqWqQ.jpg" alt="Мем 'ДжоДжо поза'" class="meme-img" onclick="openModal(this.src)">
-            <div class="meme-title">ДжоДжо поза</div>
-            <div class="meme-desc">Когда пытаешься выглядеть круто, но твоя спина уже не та</div>
-            <button class="like-btn" onclick="toggleLike(this)">❤️</button>
-            <span class="like-count">0</span>
-        </div>
-        
-        <!-- Мем 5 с эффектом -->
-        <div class="meme-card">
-            <img src="https://i.imgur.com/8ZkYQ9j.jpg" alt="Мем 'Саске одобряет'" class="meme-img floating" onclick="openModal(this.src)">
-            <div class="meme-title rainbow-text">Саске одобряет</div>
-            <div class="meme-desc">Когда наконец-то понимаешь, что Наруто был прав</div>
-            <button class="like-btn" onclick="toggleLike(this)">❤️</button>
-            <span class="like-count">0</span>
-        </div>
-    </div>
-    
-    <!-- Модальное окно для изображений -->
-    <div class="modal" id="imageModal">
-        <span class="close-modal" onclick="closeModal()">&times;</span>
-        <img class="modal-content" id="modalImage">
-    </div>
-    
-    <!-- Аудио-плеер -->
-    <div class="audio-player">
-        <p>Фоновое аниме: <span id="songTitle">Guren no Yumiya</span></p>
-        <audio controls id="bgMusic" loop>
-            <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-            Ваш браузер не поддерживает аудио элемент.
-        </audio>
-        <button onclick="changeTrack()">Следующий трек</button>
-    </div>
-    
+      </div>
+    </main>
+
     <footer>
-        <p>© 2023 Аниме Мемы | Сайт создан для кринжа и вайба</p>
-        <p>Disclaimer: Все мемы взяты из открытых источников. Авторство принадлежит аниме-сообществу.</p>
-        <button onclick="createConfetti()">🎉 Нажми для праздника!</button>
+      <p>© 2023 File Converter | Powered by Glitch</p>
     </footer>
-    
-    <script>
-        // Переключение темы
-        const themeToggle = document.getElementById('themeToggle');
-        themeToggle.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            themeToggle.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
-        });
-        
-        // Лайки
-        function toggleLike(button) {
-            button.classList.toggle('liked');
-            const likeCount = button.nextElementSibling;
-            likeCount.textContent = button.classList.contains('liked') ? 
-                parseInt(likeCount.textContent) + 1 : 
-                parseInt(likeCount.textContent) - 1;
-            
-            if (button.classList.contains('liked')) {
-                createConfetti(button);
-            }
-        }
-        
-        // Модальное окно для изображений
-        function openModal(src) {
-            const modal = document.getElementById('imageModal');
-            const modalImg = document.getElementById('modalImage');
-            modal.style.display = 'flex';
-            modalImg.src = src;
-        }
-        
-        function closeModal() {
-            document.getElementById('imageModal').style.display = 'none';
-        }
-        
-        // Конфетти
-        function createConfetti(element) {
-            const rect = element ? element.getBoundingClientRect() : null;
-            const x = element ? rect.left + rect.width/2 : window.innerWidth/2;
-            
-            for (let i = 0; i < 50; i++) {
-                const confetti = document.createElement('div');
-                confetti.className = 'confetti';
-                confetti.style.left = `${x + (Math.random() - 0.5) * 200}px`;
-                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
-                confetti.style.width = `${Math.random() * 10 + 5}px`;
-                confetti.style.height = `${Math.random() * 10 + 5}px`;
-                confetti.style.animationDuration = `${Math.random() * 3 + 2}s`;
-                document.body.appendChild(confetti);
-                
-                setTimeout(() => {
-                    confetti.remove();
-                }, 5000);
-            }
-        }
-        
-        // Поиск
-        const searchBox = document.getElementById('searchBox');
-        searchBox.addEventListener('input', () => {
-            const searchTerm = searchBox.value.toLowerCase();
-            const memes = document.querySelectorAll('.meme-card');
-            
-            memes.forEach(meme => {
-                const title = meme.querySelector('.meme-title').textContent.toLowerCase();
-                const desc = meme.querySelector('.meme-desc').textContent.toLowerCase();
-                
-                if (title.includes(searchTerm) || desc.includes(searchTerm)) {
-                    meme.style.display = 'block';
-                } else {
-                    meme.style.display = 'none';
-                }
-            });
-        });
-        
-        // Аудио-плеер
-        const audioPlayer = document.getElementById('bgMusic');
-        const songTitles = ['Guren no Yumiya', 'Unravel', 'Silhouette', 'Blue Bird'];
-        let currentTrack = 0;
-        
-        function changeTrack() {
-            currentTrack = (currentTrack + 1) % songTitles.length;
-            document.getElementById('songTitle').textContent = songTitles[currentTrack];
-            // Здесь должны быть реальные ссылки на музыку
-            audioPlayer.src = `https://www.soundhelix.com/examples/mp3/SoundHelix-Song-${currentTrack + 1}.mp3`;
-            audioPlayer.play();
-        }
-        
-        // Случайный мем при загрузке
-        window.addEventListener('load', () => {
-            const memes = document.querySelectorAll('.meme-card');
-            const randomMeme = memes[Math.floor(Math.random() * memes.length)];
-            randomMeme.style.animation = 'pulse 2s infinite';
-            
-            // Автовоспроизведение музыки (может не работать без взаимодействия пользователя)
-            audioPlayer.volume = 0.3;
-            // audioPlayer.play().catch(e => console.log('Автовоспроизведение заблокировано'));
-        });
-    </script>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
